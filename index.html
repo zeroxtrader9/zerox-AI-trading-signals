@@ -3,85 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>90% Accuracy VIP Dashboard</title>
+    <title>95% Accuracy VIP Dashboard</title>
     <style>
-        body { background: #0a0e14; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        .header { text-align: center; padding: 10px; background: #161b22; border-bottom: 2px solid #00d4ff; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; max-width: 1200px; margin: auto; }
-        .card { background: #161b22; border-radius: 12px; padding: 15px; border: 1px solid #30363d; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h2 { color: #00d4ff; font-size: 16px; margin-top: 0; border-left: 4px solid #00d4ff; padding-left: 10px; }
-        .payment-btn { width: 100%; padding: 12px; background: #00d4ff; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #30363d; background: #0d1117; color: white; }
+        body { background: #06090f; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
+        .header { text-align: center; padding: 10px; background: #1a1f2b; border-bottom: 2px solid #00d4ff; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; max-width: 1200px; margin: auto; }
+        .card { background: #161b22; border-radius: 12px; padding: 15px; border: 1px solid #30363d; }
+        h2 { color: #00d4ff; font-size: 16px; margin-bottom: 10px; text-align: center; }
+        .tip { background: #ff4444; color: #fff; padding: 8px; border-radius: 5px; font-size: 11px; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>🚀 VIP 1-MIN SIGNAL BOT</h1>
-    <p style="color: #ff4444; font-size: 12px; font-weight: bold;">⚠️ ONLY TRADE ON "STRONG BUY" OR "STRONG SELL"</p>
+    <h1>🎯 VIP 1-MIN ACCURACY BOT</h1>
+    <div class="tip">RULE: Only Trade when ALL 3 Meters show "BUY" or "SELL"</div>
 </div>
 
 <div class="grid">
-    <div class="card" style="min-height: 400px;">
+    <div class="card" style="grid-column: span 1;">
         <h2>📊 Live Market (1m)</h2>
-        <div id="tv_chart_container" style="height: 350px;"></div>
+        <div id="tv_chart_container" style="height: 400px;"></div>
     </div>
 
     <div class="card">
-        <h2>🤖 AI Signal Scanner</h2>
+        <h2>🤖 Multi-Indicator Scanner</h2>
         <div class="tradingview-widget-container">
-            <div class="tradingview-widget-container__widget"></div>
             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
             {
                 "interval": "1m",
                 "width": "100%",
-                "height": 380,
+                "height": 400,
                 "symbol": "FX:EURUSD",
                 "showIntervalTabs": true,
-                "displayMode": "single",
+                "displayMode": "multiple",
                 "locale": "en",
                 "colorTheme": "dark"
             }
             </script>
         </div>
     </div>
-
-    <div class="card">
-        <h2>💰 Loss Recovery (Martingale)</h2>
-        <input type="number" id="lossAmount" placeholder="Last Loss Amount ($)">
-        <button class="payment-btn" onclick="calc()">Calculate Next Trade</button>
-        <div id="res" style="margin-top:10px; color:#00ff88; font-weight:bold;"></div>
-        
-        <hr style="border:0.1px solid #333; margin:20px 0;">
-        
-        <h2>💎 UNLOCK 95% ACCURACY</h2>
-        <button class="payment-btn" style="background:gold;" onclick="alert('Redirecting to Payment...')">Pay $30 for VIP Access</button>
-    </div>
 </div>
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script type="text/javascript">
   new TradingView.widget({
-    "width": "100%",
-    "height": 350,
-    "symbol": "FX:EURUSD",
-    "interval": "1",
-    "timezone": "Etc/UTC",
-    "theme": "dark",
-    "style": "1",
-    "locale": "en",
-    "toolbar_bg": "#f1f3f6",
-    "enable_publishing": false,
-    "hide_top_toolbar": true,
-    "container_id": "tv_chart_container"
+    "width": "100%", "height": 400, "symbol": "FX:EURUSD", "interval": "1",
+    "theme": "dark", "style": "1", "container_id": "tv_chart_container",
+    "hide_top_toolbar": true
   });
-
-  function calc() {
-      let l = document.getElementById('lossAmount').value;
-      if(l) {
-          document.getElementById('res').innerText = "Next Trade: $" + (l * 2.25).toFixed(2);
-      }
-  }
 </script>
 
 </body>
