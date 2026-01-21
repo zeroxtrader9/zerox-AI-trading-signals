@@ -3,55 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>95% Accuracy VIP Dashboard</title>
+    <title>1-Min Precision Signal</title>
     <style>
-        body { background: #06090f; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        .header { text-align: center; padding: 10px; background: #1a1f2b; border-bottom: 2px solid #00d4ff; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; max-width: 1200px; margin: auto; }
-        .card { background: #161b22; border-radius: 12px; padding: 15px; border: 1px solid #30363d; }
-        h2 { color: #00d4ff; font-size: 16px; margin-bottom: 10px; text-align: center; }
-        .tip { background: #ff4444; color: #fff; padding: 8px; border-radius: 5px; font-size: 11px; text-align: center; margin-bottom: 10px; }
+        body { background: #0a0e14; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        .dashboard { max-width: 600px; margin: auto; background: #161b22; border-radius: 20px; padding: 20px; border: 2px solid #00d4ff; }
+        .timer-box { font-size: 40px; color: #00d4ff; margin: 20px 0; font-weight: bold; }
+        .signal-meter { height: 400px; width: 100%; border-radius: 10px; overflow: hidden; }
+        .instruction { background: #1f2937; padding: 10px; border-radius: 10px; margin-bottom: 20px; color: #9ca3af; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>🎯 VIP 1-MIN ACCURACY BOT</h1>
-    <div class="tip">RULE: Only Trade when ALL 3 Meters show "BUY" or "SELL"</div>
-</div>
-
-<div class="grid">
-    <div class="card" style="grid-column: span 1;">
-        <h2>📊 Live Market (1m)</h2>
-        <div id="tv_chart_container" style="height: 400px;"></div>
+<div class="dashboard">
+    <h1>🎯 1-MIN SIGNAL PRECISION</h1>
+    
+    <div class="instruction">
+        Wait for Candle to Close. Trade only on <b>STRONG</b> Signals.
     </div>
 
-    <div class="card">
-        <h2>🤖 Multi-Indicator Scanner</h2>
-        <div class="tradingview-widget-container">
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
-            {
-                "interval": "1m",
-                "width": "100%",
-                "height": 400,
-                "symbol": "FX:EURUSD",
-                "showIntervalTabs": true,
-                "displayMode": "multiple",
-                "locale": "en",
-                "colorTheme": "dark"
+    <div class="timer-box" id="timer">00:60</div>
+    <p>Next Signal Update</p>
+
+    <div class="signal-meter">
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+        {
+            "interval": "1m",
+            "width": "100%",
+            "height": 400,
+            "symbol": "FX:EURUSD",
+            "showIntervalTabs": false,
+            "displayMode": "single",
+            "locale": "en",
+            "colorTheme": "dark"
+        }
+        </script>
+    </div>
+
+    <br>
+    <button onclick="location.reload()" style="background:none; border:1px solid #333; color:#555; cursor:pointer;">Refresh Data Manually</button>
+</div>
+
+<script>
+    // 60-Second Countdown for 1-Min Candles
+    function startTimer() {
+        var seconds = 60 - new Date().getSeconds();
+        if (seconds == 60) seconds = 0;
+        
+        setInterval(function() {
+            var now = new Date();
+            var remaining = 60 - now.getSeconds();
+            if (remaining == 60) {
+                // Candle just finished! Logic to alert user
+                document.getElementById('timer').style.color = "#00ff88"; 
+                document.getElementById('timer').innerText = "NEW SIGNAL!";
+            } else {
+                document.getElementById('timer').style.color = "#00d4ff";
+                document.getElementById('timer').innerText = "00:" + (remaining < 10 ? "0" : "") + remaining;
             }
-            </script>
-        </div>
-    </div>
-</div>
-
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-<script type="text/javascript">
-  new TradingView.widget({
-    "width": "100%", "height": 400, "symbol": "FX:EURUSD", "interval": "1",
-    "theme": "dark", "style": "1", "container_id": "tv_chart_container",
-    "hide_top_toolbar": true
-  });
+        }, 1000);
+    }
+    startTimer();
 </script>
 
 </body>
