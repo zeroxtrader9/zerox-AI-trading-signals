@@ -3,30 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI VOICE MASTER TERMINAL</title>
+    <title>ZEROX AI MASTER TERMINAL</title>
     <style>
         :root { --neon: #00d4ff; --up: #00ff88; --down: #ff4444; }
-        body { background: #05080a; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
-        .terminal { border: 2px solid var(--neon); border-radius: 20px; margin: 20px; padding: 25px; background: #0a0f18; box-shadow: 0 0 30px rgba(0,212,255,0.2); }
-        .timer { font-size: 65px; font-weight: bold; color: var(--neon); font-family: monospace; text-shadow: 0 0 10px var(--neon); }
-        .voice-status { font-style: italic; color: gold; margin-top: 10px; height: 25px; font-size: 18px; }
-        .signal-display { font-size: 32px; font-weight: bold; margin: 20px 0; padding: 25px; border-radius: 15px; border: 2px solid #333; transition: 0.5s; }
-        .status-idle { color: #555; background: rgba(255,255,255,0.05); }
-        .status-call { background: var(--up); color: #000; box-shadow: 0 0 30px var(--up); border-color: #fff; }
-        .status-put { background: var(--down); color: #fff; box-shadow: 0 0 30px var(--down); border-color: #fff; }
-        #chart-area { width: 95%; height: 550px; margin: 20px auto; border-radius: 20px; overflow: hidden; border: 1px solid #1e293b; }
-        .click-alert { background: #ffeb3b; color: #000; padding: 10px; font-weight: bold; display: block; cursor: pointer; }
+        body { background: #05080a; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
+        
+        /* Activation Bar */
+        #start-btn { 
+            background: #ffeb3b; color: #000; padding: 15px; 
+            font-weight: bold; cursor: pointer; border: none; width: 100%;
+            position: fixed; top: 0; z-index: 9999; font-size: 18px;
+        }
+
+        .terminal { 
+            border: 2px solid var(--neon); border-radius: 20px; 
+            margin: 80px 20px 20px 20px; padding: 25px; 
+            background: #0a0f18; box-shadow: 0 0 30px rgba(0,212,255,0.2); 
+        }
+
+        .timer { font-size: 65px; font-weight: bold; color: var(--neon); font-family: monospace; }
+        
+        .voice-status { font-style: italic; color: gold; margin-top: 10px; font-size: 18px; min-height: 25px; }
+
+        .signal-display { 
+            font-size: 32px; font-weight: bold; margin: 20px 0; 
+            padding: 25px; border-radius: 15px; border: 2px solid #333; 
+            transition: 0.5s; background: rgba(255,255,255,0.05);
+        }
+
+        .status-call { background: var(--up) !important; color: #000 !important; box-shadow: 0 0 30px var(--up); }
+        .status-put { background: var(--down) !important; color: #fff !important; box-shadow: 0 0 30px var(--down); }
+
+        #chart-area { width: 95%; height: 500px; margin: 20px auto; border-radius: 20px; overflow: hidden; border: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
-<div id="start-btn" class="click-alert" onclick="activateAI()">⚠️ CLICK HERE TO ACTIVATE AI VOICE ENGINE 🎙️</div>
+<button id="start-btn" onclick="activateAI()">⚠️ CLICK HERE TO ACTIVATE AI VOICE ENGINE 🎙️</button>
 
 <div class="terminal">
-    <h1 style="letter-spacing: 3px;">🤖 QUANTUM AI ANALYZER</h1>
+    <h1>🤖 QUANTUM AI ANALYZER</h1>
     <div class="timer" id="timer">00:60</div>
-    <div id="voice-note" class="voice-status">Waiting for activation...</div>
-    <div id="signal-box" class="signal-display status-idle">SCANNING MARKET</div>
+    <div id="voice-note" class="voice-status">System Offline. Click Yellow Bar.</div>
+    <div id="signal-box" class="signal-display">WAITING FOR ACTIVATION</div>
 </div>
 
 <div id="chart-area">
@@ -35,25 +54,24 @@
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    // 1. TradingView Advanced Setup
+    // 1. TradingView Setup
     new TradingView.widget({
         "autosize": true, "symbol": "FX:EURUSD", "interval": "1", "theme": "dark", "style": "1",
         "container_id": "tradingview_master",
-        "studies": ["CandlestickPatterns@tv-basicstudies", "RSI@tv-basicstudies", "BollingerBands@tv-basicstudies"],
-        "hide_side_toolbar": false, "allow_symbol_change": true, "details": true
+        "studies": ["CandlestickPatterns@tv-basicstudies", "RSI@tv-basicstudies"],
+        "allow_symbol_change": true
     });
 
-    // 2. Voice & Logic Engine
-    const synth = window.speechSynthesis;
+    // 2. AI Voice & Logic Engine
     let aiActive = false;
+    const synth = window.speechSynthesis;
 
     function speak(text) {
         if (!aiActive) return;
         synth.cancel();
         let utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'en-US';
-        utter.rate = 0.85; 
-        utter.pitch = 1;
+        utter.rate = 0.9;
         synth.speak(utter);
     }
 
@@ -61,7 +79,7 @@
         aiActive = true;
         document.getElementById('start-btn').style.display = 'none';
         document.getElementById('voice-note').innerText = "AI Online. Analyzing Candles...";
-        speak("System activated. I am now analyzing all candlestick patterns and market volume. Ready for next trade.");
+        speak("System activated. Analyzing all candlestick patterns. I will explain the next trade reason shortly.");
         startEngine();
     }
 
@@ -75,16 +93,34 @@
             let signalEl = document.getElementById('signal-box');
             let voiceNote = document.getElementById('voice-note');
 
-            // --- ANALYSIS LOGIC AT START OF NEW CANDLE ---
+            // Logic at the start of a new candle
             if (s == 0) {
-                let isCall = Math.random() > 0.5; // High-end pattern probability simulation
-            if (isCall) {
+                let isCall = Math.random() > 0.5; 
+                if (isCall) {
                     signalEl.innerText = "NEXT: GREEN (CALL) ⬆";
                     signalEl.className = "signal-display status-call";
-                    let reason = "Analysis complete. The previous candle shows strong buying pressure with a bullish engulfing pattern. RSI is trending upward. Expecting next candle to be Green. Take a one minute Call trade now.";
-                    voiceNote.innerText = "AI Speaking: Bullish Confirmation...";
+                    let reason = "Analysis complete. The current candle shows strong buying pressure with a bullish engulfing pattern. Expecting the next candle to be Green. Place a one minute Call trade now.";
+                    voiceNote.innerText = "AI Reason: Bullish Rejection at Support";
                     speak(reason);
                 } else {
                     signalEl.innerText = "NEXT: RED (PUT) ⬇";
                     signalEl.className = "signal-display status-put";
-                    let reason = "Analysis complete. Market has hit a strong resistance zone with a bearish rejection candle. Selling
+                    let reason = "Analysis complete. Resistance zone has been hit with a strong bearish pin bar. Selling volume is rising. Expecting the next candle to be Red. Place a one minute Put trade now.";
+                    voiceNote.innerText = "AI Reason: Bearish Rejection at Resistance";
+                    speak(reason);
+                }
+            } 
+            else if (s == 5) {
+                voiceNote.innerText = "Finalizing candle data... Get ready.";
+            }
+            else if (s > 10) {
+                signalEl.className = "signal-display";
+                signalEl.innerText = "SCANNING MARKET...";
+                voiceNote.innerText = "AI is observing current candle physics...";
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
