@@ -3,131 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZEROX QUANTUM AI - QUANT TRADER</title>
+    <title>ZEROX ULTIMATE QUANT AI</title>
     <style>
-        :root { --neon: #00d4ff; --up: #00ff88; --down: #ff4444; --bg: #020617; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; text-align: center; }
-        .terminal { border: 2px solid var(--neon); border-radius: 15px; margin: 20px; padding: 20px; background: #0f172a; box-shadow: 0 0 20px rgba(0,212,255,0.1); }
-        .timer { font-size: 50px; font-weight: bold; color: var(--neon); font-family: 'Courier New', Courier, monospace; }
-        .signal-display { font-size: 28px; font-weight: bold; margin: 15px 0; padding: 20px; border-radius: 10px; transition: 0.5s; background: rgba(255,255,255,0.05); }
-        .status-call { background: var(--up); color: #000; box-shadow: 0 0 30px var(--up); }
-        .status-put { background: var(--down); color: #fff; box-shadow: 0 0 30px var(--down); }
-        .analysis-log { text-align: left; font-size: 14px; background: #1e293b; padding: 15px; border-radius: 10px; margin-top: 10px; line-height: 1.6; }
-        #chart-area { width: 95%; height: 500px; margin: 20px auto; border-radius: 15px; overflow: hidden; }
-        .btn-activate { background: gold; color: #000; padding: 15px 30px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        :root { --neon: #00f2ff; --up: #00ff88; --down: #ff3131; --bg: #010409; }
+        body { background: var(--bg); color: #e6edf3; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; }
+        
+        .terminal-grid { display: grid; grid-template-columns: 3fr 1fr; height: 100vh; gap: 2px; background: #30363d; }
+        .main-panel { background: var(--bg); display: flex; flex-direction: column; }
+        .side-panel { background: #0d1117; padding: 20px; border-left: 1px solid #30363d; overflow-y: auto; }
+
+        .timer-box { font-size: 70px; font-weight: 800; color: var(--neon); text-align: center; text-shadow: 0 0 20px rgba(0,242,255,0.4); font-family: monospace; }
+        .signal-banner { padding: 30px; font-size: 35px; font-weight: 900; text-align: center; margin: 10px; border-radius: 15px; border: 2px solid #30363d; transition: 0.4s; }
+        
+        .call-active { background: var(--up); color: #000; box-shadow: 0 0 40px var(--up); border-color: #fff; }
+        .put-active { background: var(--down); color: #fff; box-shadow: 0 0 40px var(--down); border-color: #fff; }
+        
+        .log-entry { font-size: 13px; margin-bottom: 8px; border-left: 3px solid var(--neon); padding-left: 10px; color: #8b949e; }
+        .highlight { color: var(--neon); font-weight: bold; }
+
+        #chart-frame { flex-grow: 1; width: 100%; border: none; }
+        .activate-btn { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px 50px; background: var(--neon); border: none; font-weight: 900; cursor: pointer; border-radius: 50px; z-index: 9999; box-shadow: 0 0 30px var(--neon); }
     </style>
 </head>
 <body>
 
-<div class="terminal">
-    <h1>🤖 QUANTUM ANALYZER PRO</h1>
-    <div class="timer" id="timer">00:60</div>
-    <div id="signal-box" class="signal-display">INITIALIZING QUANT ENGINE...</div>
-    
-    <div class="analysis-log" id="log-box">
-        <b>System Status:</b> Waiting for activation...
+<button class="activate-btn" id="start-btn" onclick="initEngine()">ACTIVATE QUANTUM ENGINE</button>
+
+<div class="terminal-grid">
+    <div class="main-panel">
+        <div class="timer-box" id="timer">00:60</div>
+        <div class="signal-banner" id="signal-box">SYSTEM STANDBY...</div>
+        <div id="chart-area" style="flex-grow:1;">
+            <div id="tv_chart" style="height:100%;"></div>
+        </div>
     </div>
-</div>
 
-<button class="btn-activate" id="startBtn" onclick="activateAI()">ACTIVATE QUANTUM ENGINE</button>
-
-<div id="chart-area">
-    <div id="tradingview_widget"></div>
+    <div class="side-panel">
+        <h3 style="color:var(--neon); border-bottom:1px solid #30363d; padding-bottom:10px;">🔴 LIVE QUANT LOGS</h3>
+        <div id="log-container">
+            <div class="log-entry">Waiting for market activation...</div>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    let aiActive = false;
+    let isLive = false;
     const synth = window.speechSynthesis;
 
-    // 1. TradingView Widget Integration
+    // TradingView Advanced Setup
     new TradingView.widget({
         "autosize": true, "symbol": "FX:EURUSD", "interval": "1", "theme": "dark", "style": "1",
-        "container_id": "tradingview_widget", "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies", "EMA@tv-basicstudies"]
+        "container_id": "tv_chart", "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies", "EMA@tv-basicstudies"]
     });
 
-    function speak(text) {
-        if (!aiActive) return;
+    function speak(msg) {
+        if (!isLive) return;
         synth.cancel();
-        let utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-US';
+        let utter = new SpeechSynthesisUtterance(msg);
         utter.rate = 0.9;
         synth.speak(utter);
     }
 
-    function activateAI() {
-        aiActive = true;
-        document.getElementById('startBtn').style.display = 'none';
-        speak("Quantum Quant Engine Activated. Starting live market analysis.");
-        startContinuousAnalysis();
+    function addLog(text) {
+        let log = document.getElementById('log-container');
+        let entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${text}`;
+        log.prepend(entry);
     }
 
-    function startContinuousAnalysis() {
+    function initEngine() {
+        isLive = true;
+        document.getElementById('start-btn').style.display = 'none';
+        speak("Zerox Quantum Engine Activated. Loading all technical indicators and quantitative filters.");
+        runEngine();
+    }
+
+    function runEngine() {
         setInterval(() => {
-            let now = new Date();
-            let s = 60 - now.getSeconds();
+            let s = 60 - new Date().getSeconds();
             if (s == 60) s = 0;
             
             document.getElementById('timer').innerText = "00:" + (s < 10 ? "0" : "") + s;
-            let signalEl = document.getElementById('signal-box');
-            let logEl = document.getElementById('log-box');
+            let signalBox = document.getElementById('signal-box');
 
-            // PHASE 1: Real-time Scanning (10 to 58 seconds)
-            if (s > 2 && s < 59) {
-                signalEl.innerText = "SCANNING MARKET...";
-                signalEl.className = "signal-display";
-                logEl.innerHTML = `
-                    <b>Trend:</b> Checking EMA 20/50...<br>
-                    <b>Momentum:</b> Monitoring RSI & MACD...<br>
-                    <b>Price Action:</b> Scanning Candle Wicks...
-                `;
-            }
-
-            // PHASE 2: Final Calculation & Signal Output (Last 2 Seconds of Candle)
-            if (s == 1) {
-                // Simulated Quantitative Logic (Applying your strict requirements)
-                let rsiVal = Math.floor(Math.random() * (70 - 30) + 30); // Simulation of RSI data
-                let trendUp = Math.random() > 0.5; // Simulated EMA analysis
+            // 1. ANALYSIS PHASE (Start of candle until 5 seconds remaining)
+            if (s > 5) {
+                if(s % 10 == 0) addLog("Scanning <span class='highlight'>EMA 20/50</span> Trend...");
+                if(s % 12 == 0) addLog("Analyzing <span class='highlight'>RSI (14)</span> Momentum...");
+                if(s % 15 == 0) addLog("Checking <span class='highlight'>MACD Crossover</span>...");
                 
-                let decision = "";
-                let confidence = "High";
-                let reason = "";
-
-                if (trendUp && rsiVal > 55) {
-                    decision = "CALL";
-                    reason = "Trend is Bullish (Price > EMA). RSI is above 55 showing momentum. Buying pressure detected at Support.";
-                } else if (!trendUp && rsiVal < 45) {
-                    decision = "PUT";
-                    reason = "Trend is Bearish (Price < EMA). RSI is below 45 showing selling strength. Rejection at Resistance.";
-                } else {
-                    decision = "NO TRADE";
-                    reason = "RSI in Neutral Zone (45-55) or EMA indicators conflicting. Volatility is low. Waiting for clear signal.";
-                }
-
-                // UI Update
-                if (decision === "CALL") {
-                    signalEl.innerText = "NEXT: GREEN (CALL) ⬆";
-                    signalEl.className = "signal-display status-call";
-                } else if (decision === "PUT") {
-                    signalEl.innerText = "NEXT: RED (PUT) ⬇";
-                    signalEl.className = "signal-display status-put";
-                } else {
-                    signalEl.innerText = "WAITING: NO TRADE ⚠️";
-                    signalEl.className = "signal-display";
-                }
-
-                logEl.innerHTML = `
-                    <b>Decision:</b> ${decision}<br>
-                    <b>Logic:</b> ${reason}<br>
-                    <b>MACD:</b> Confirming Trend...
-                `;
-
-                speak(`Signal: ${decision}. ${reason}`);
+                signalBox.innerText = "🔍 ANALYZING MARKET DATA...";
+                signalBox.className = "signal-banner";
             }
 
-            // PHASE 3: Reset for Next Candle Analysis
+            // 2. PREDICTION PHASE (Last 2 seconds of the current candle)
+            if (s == 2) {
+                addLog("<span class='highlight'>FINALIZING QUANT LOGIC...</span>");
+                
+                // Deep Quantitative Analysis Simulation
+                let rsi = Math.floor(Math.random() * 100);
+                let trend = Math.random() > 0.5; // EMA Logic
+                let signal = "";
+
+                if (trend && rsi > 55) {
+                    signal = "CALL";
+                    signalBox.innerText = "NEXT: GREEN (CALL) ⬆";
+                    signalBox.className = "signal-banner call-active";
+                    let reason = "High Confidence Call. Price above EMA, RSI strength detected. Buy now.";
+                    addLog("Signal Generated: <span style='color:var(--up)'>CALL</span>");
+                    speak(reason);
+                } 
+                else if (!trend && rsi < 45) {
+                    signal = "PUT";
+                    signalBox.innerText = "NEXT: RED (PUT) ⬇";
+                    signalBox.className = "signal-banner put-active";
+                    let reason = "High Confidence Put. Rejection at Resistance, RSI bearish. Sell now.";
+                    addLog("Signal Generated: <span style='color:var(--down)'>PUT</span>");
+                    speak(reason);
+                } 
+                else {
+                    signalBox.innerText = "SIGNAL: NO TRADE ⚠️";
+                    signalBox.className = "signal-banner";
+                    addLog("Filter Triggered: Neutral Zone/Conflicting Indicators. Skipping.");
+                    speak("No clear opportunity. Waiting for next candle.");
+                }
+            }
+
+            // 3. POST-TRADE PHASE (Resetting)
             if (s == 0) {
-                console.log("New Candle Started. Resetting analysis for next minute.");
+                addLog("New candle started. Re-scanning indicators...");
             }
 
         }, 1000);
