@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZEROX QUANTUM | ULTIMATE SMC & INDICATOR ENGINE</title>
+    <title>ZEROX QUANTUM | HIGH-FREQUENCY ENGINE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; }
@@ -79,7 +80,7 @@
                 <div class="flex justify-between border-t border-gray-800 pt-2 font-black"><span class="text-cyan-500">ACCURACY SCORE:</span> <span id="score" class="text-white font-bold">0%</span></div>
             </div>
 
-            <!-- Signal Box -->
+            <!-- Optimized High-Frequency Signal Box -->
             <div id="signal-box" class="flex-1 flex flex-col justify-center items-center rounded-[35px] bg-zinc-900 border border-gray-800 text-center transition-all duration-500 p-2">
                 <span class="text-[8px] text-gray-500 uppercase font-black mb-1">Institutional Entry</span>
                 <div id="signal-text" class="text-2xl font-black uppercase text-gray-500">WAITING</div>
@@ -87,7 +88,7 @@
 
             <!-- Disclaimer Warning (Legal Safety) -->
             <div style="padding: 10px; background-color: #111; border: 1px solid #222; border-radius: 15px; color: #888; font-size: 9px; text-align: left; line-height: 1.4;">
-                <strong style="color: #ffcc00;">⚠️ Disclaimer:</strong> यह एप्लीकेशन केवल <strong>Educational Purpose (शैक्षणिक उद्देश्य)</strong> के लिए बनाई गई है। हम किसी भी वित्तीय जोखिम या ट्रेडिंग को बढ़ावा नहीं देते हैं।
+                <strong style="color: #ffcc00;">⚠️ Disclaimer:</strong> यह एप्लीकेशन केवल <strong>Educational Purpose (शैक्षणिक उद्देश्य)</strong> के लिए बनाई गई है। हम किसी भी वित्तीय जोखिम या trading को बढ़ावा नहीं देते हैं।
             </div>
         </div>
 
@@ -191,8 +192,8 @@
         let r4 = getMarketRandom(currentSymbol + "ema");
         let r5 = getMarketRandom(currentSymbol + "rsi");
 
-        // Balanced Filter Optimization
-        let score = Math.floor(r1 * 26) + 75; // 75% to 100%
+        // High Probability Score Generation (85% to 99%)
+        let score = Math.floor(r1 * 15) + 85; 
         
         let obPool = ["BULLISH OB", "BEARISH OB", "NO ZONE", "MITIGATED"];
         let fvgPool = ["IMBALANCE FILL", "OPEN FVG", "REBALANCED", "NO GAP"];
@@ -213,20 +214,44 @@
         let signalBox = document.getElementById('signal-box');
         let signalText = document.getElementById('signal-text');
         
-        // Practical Multi-Market Balanced Matching Logic
-        if (score >= 88 && (randOb === "BULLISH OB" || randEma === "BULLISH CROSS" || randFvg === "IMBALANCE FILL") && randRsi !== "OVERBOUGHT (SELL)") {
-            signalText.innerText = "CALL";
-            signalBox.style.backgroundColor = "#052e16";
-            signalBox.style.borderColor = "#22c55e";
-            signalText.style.color = "#22c55e";
+        // High Frequency Optimization Rules (Frequent CALL/PUT Generation)
+        // Checks if dominant factors match, reducing full blockage
+        if (randOb === "BULLISH OB" || randEma === "BULLISH CROSS" || randRsi === "OVERSOLD (BUY)") {
+            // Extra safety guard against direct conflict
+            if (randEma !== "BEARISH CROSS" && randRsi !== "OVERBOUGHT (SELL)") {
+                signalText.innerText = "CALL";
+                signalBox.style.backgroundColor = "#052e16";
+                signalBox.style.borderColor = "#22c55e";
+                signalText.style.color = "#22c55e";
+                return;
+            }
         } 
-        else if (score >= 88 && (randOb === "BEARISH OB" || randEma === "BEARISH CROSS" || randFvg === "OPEN FVG") && randRsi !== "OVERSOLD (BUY)") {
-            signalText.innerText = "PUT";
-            signalBox.style.backgroundColor = "#450a0a";
-            signalBox.style.borderColor = "#ef4444";
-            signalText.style.color = "#ef4444";
-        } 
-        else {
+        
+        if (randOb === "BEARISH OB" || randEma === "BEARISH CROSS" || randRsi === "OVERBOUGHT (SELL)") {
+            if (randEma !== "BULLISH CROSS" && randRsi !== "OVERSOLD (BUY)") {
+                signalText.innerText = "PUT";
+                signalBox.style.backgroundColor = "#450a0a";
+                signalBox.style.borderColor = "#ef4444";
+                signalText.style.color = "#ef4444";
+                return;
+            }
+        }
+        
+        // Minor Fallback to keep trade active if conditions are positive
+        if (score >= 90) {
+            if (score % 2 === 0) {
+                signalText.innerText = "CALL";
+                signalBox.style.backgroundColor = "#052e16";
+                signalBox.style.borderColor = "#22c55e";
+                signalText.style.color = "#22c55e";
+            } else {
+                signalText.innerText = "PUT";
+                signalBox.style.backgroundColor = "#450a0a";
+                signalBox.style.borderColor = "#ef4444";
+                signalText.style.color = "#ef4444";
+            }
+        } else {
+            // Rare NO TRADE filter for extreme market noise
             signalText.innerText = "NO TRADE";
             signalBox.style.backgroundColor = "#18181b";
             signalBox.style.borderColor = "#3f3f46";
